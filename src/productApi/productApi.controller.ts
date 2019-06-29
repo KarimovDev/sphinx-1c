@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Delete } from '@nestjs/common';
 import { ProductApi } from './productApi.entity';
 import { ProductApiService } from './productApi.service';
 
@@ -14,5 +14,10 @@ export class ProductApiController {
     @Post()
     async create(@Body() productApi: ProductApi): Promise<ProductApi> {
         return this.productApiService.create(productApi);
+    }
+
+    @Delete()
+    async clearAll(): Promise<any> {
+        return this.productApiService.clearAll();
     }
 }

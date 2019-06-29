@@ -19,4 +19,8 @@ export class ProductApiService {
     async create(productApi: ProductApi): Promise<ProductApi> {
         return await this.productRepository.save(productApi);
     }
+
+    async clearAll(): Promise<any> {
+        return await this.productRepository.clear();
+    }
 }
