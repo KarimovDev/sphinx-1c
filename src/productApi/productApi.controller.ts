@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Post, Body } from '@nestjs/common';
 import { ProductApi } from './productApi.entity';
 import { ProductApiService } from './productApi.service';
 
@@ -9,5 +9,10 @@ export class ProductApiController {
     @Get()
     async getAll(): Promise<ProductApi[]> {
         return this.productApiService.getAll();
+    }
+
+    @Post()
+    async create(@Body() productApi: ProductApi): Promise<ProductApi> {
+        return this.productApiService.create(productApi);
     }
 }

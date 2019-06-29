@@ -15,4 +15,8 @@ export class ProductApiService {
             take: 100,
         });
     }
+
+    async create(productApi: ProductApi): Promise<ProductApi> {
+        return await this.productRepository.save(productApi);
+    }
 }
