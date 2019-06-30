@@ -1,0 +1,23 @@
+{
+    "configSphinx": {
+        "host": "",
+        "port": "",
+        "user": "",
+        "password": "",
+        "database": "",
+        "charset": "utf8mb4"
+    },
+    "configMySql": {
+        "type": "mysql",
+        "host": "",
+        "port": 0,
+        "username": "",
+        "password": "",
+        "database": "",
+        "charset": "utf8mb4",
+        "synchronize": true
+    },
+    "sphinxFullTable": "burgazindexV3",
+    "sphinxSimpleTable": "burgazindexsimpleV3",
+    "queryMaxSize": 30
+}

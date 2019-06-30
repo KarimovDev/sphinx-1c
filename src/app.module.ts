@@ -4,21 +4,16 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProductApiModule } from './productApi/productApi.module';
 import { SphinxModule } from './sphinx/sphinx.module';
+import config = require('config');
+const configMySql = config.get('configMySql');
 
 @Module({
     imports: [
         ProductApiModule,
         SphinxModule,
         TypeOrmModule.forRoot({
-            type: 'mysql',
-            host: '10.10.0.137',
-            port: 3306,
-            username: 'root',
-            password: '123qweASD',
-            database: 'burgaz',
+            ...configMySql,
             entities: [__dirname + '/**/*.entity{.ts,.js}'],
-            charset: 'utf8mb4',
-            synchronize: true,
         }),
     ],
     controllers: [AppController],

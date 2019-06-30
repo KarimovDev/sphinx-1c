@@ -1,18 +1,65 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { createConnection } from 'mysql';
+import { ProductApi } from 'src/productApi/productApi.entity';
+import { Repository, In } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import config = require('config');
+import shell = require('shelljs');
+const configSphinx = config.get('configSphinx');
 
-const configSphinx = {
-    host: '10.10.0.137',
-    port: '9306',
-    user: '',
-    password: '',
-    database: '',
-};
 @Injectable()
 export class SphinxService implements OnModuleInit {
+    constructor(
+        @InjectRepository(ProductApi)
+        private readonly productRepository: Repository<ProductApi>,
+    ) {}
+
     sphinxConn: any;
+    sphinxQuery(queryString: string): Promise<any> {
+        return new Promise((res, rej) => {
+            this.sphinxConn.query(queryString, (error, result) => {
+                if (error) {
+                    rej(error);
+                }
+                res(result);
+            });
+        });
+    }
 
     async onModuleInit() {
         this.sphinxConn = createConnection(configSphinx);
+    }
+
+    async index(): Promise<any> {
+        return await new Promise((res, rej) => {
+            try {
+                shell.exec('sudo indexer --all --rotate', { silent: true });
+                res({ result: 'ok' });
+            } catch (error) {
+                rej({ result: 'error', error });
+            }
+        });
+    }
+
+    async search(value: string, isSimple: boolean): Promise<any> {
+        const table: string = isSimple
+            ? config.get('sphinxSimpleTable')
+            : config.get('sphinxFullTable');
+
+        return await this.sphinxQuery(`SET NAMES 'UTF-8'`)
+            .then(res => {
+                const regex = /[&\/\\#,+()$~%.'":*?<>{}_]/g;
+                value = value.replace(regex, '');
+                return this.sphinxQuery(
+                    `select * from ${table} where match('${value}') limit 0,100 ;`,
+                );
+            })
+            .then(res => {
+                const ids: string[] = [];
+                res.forEach(el => ids.push(el.id));
+                return this.productRepository.find({
+                    id: In(ids),
+                });
+            });
     }
 }
