@@ -1,19 +1,19 @@
-import { Controller, Get, Post, Param } from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
 import { SphinxService } from './sphinx.service';
 import { SearchValueParams } from './sphinx.dto';
 
-@Controller('product')
+@Controller('sphinx')
 export class SphinxController {
     constructor(private readonly sphinxService: SphinxService) {}
 
-    @Get('simple:searchValue')
-    async searchSimple(@Param() params: SearchValueParams): Promise<any> {
-        return this.sphinxService.search(params.searchValue, true);
+    @Post('simple')
+    async searchSimple(@Body() body: SearchValueParams): Promise<any> {
+        return this.sphinxService.search(body.searchValue, true);
     }
 
-    @Get('full:searchValue')
-    async searchFull(@Param() params: SearchValueParams): Promise<any> {
-        return this.sphinxService.search(params.searchValue, false);
+    @Post('full')
+    async searchFull(@Body() body: SearchValueParams): Promise<any> {
+        return this.sphinxService.search(body.searchValue, false);
     }
 
     @Post('index')

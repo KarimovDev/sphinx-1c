@@ -41,25 +41,27 @@ export class SphinxService implements OnModuleInit {
         });
     }
 
-    async search(value: string, isSimple: boolean): Promise<any> {
+    async search(value: string, isSimple: boolean): Promise<ProductApi[]> {
         const table: string = isSimple
             ? config.get('sphinxSimpleTable')
             : config.get('sphinxFullTable');
 
         return await this.sphinxQuery(`SET NAMES 'UTF-8'`)
             .then(res => {
-                const regex = /[&\/\\#,+()$~%.'":*?<>{}_]/g;
-                value = value.replace(regex, '');
                 return this.sphinxQuery(
                     `select * from ${table} where match('${value}') limit 0,100 ;`,
                 );
             })
             .then(res => {
+                let result: Promise<ProductApi[]> = Promise.resolve([]);
                 const ids: string[] = [];
                 res.forEach(el => ids.push(el.id));
-                return this.productRepository.find({
-                    id: In(ids),
-                });
+                if (ids.length !== 0) {
+                    result = this.productRepository.find({
+                        id: In(ids),
+                    });
+                }
+                return result;
             });
     }
 }
